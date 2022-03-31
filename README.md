@@ -9,7 +9,7 @@ Program can export users university calendar events from different sources and c
 - User can choose from 4 event sources: TalTech ÕIS, Tartu ÕIS, TalTech Moodle, Tartu Moodle
 - Credentials are asked from the user for the relevant sources
 - Event data is extracted from sources with HTTP requests, using the credentials to authenticate
-- Google calendar access is gained by triggering OAuth sing-in dialog and Google Calendar API is used to write events into calendar
+- Google calendar access is gained by triggering OAuth sign-in dialog and Google Calendar API is used to write events into calendar
 
 ---
 
