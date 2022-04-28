@@ -99,12 +99,11 @@ if "4" in sources:
 def demo_print(cal):
     for event in cal.walk():
         if event.name == "VEVENT":
-            if event.name == "VEVENT":
-                print("Event name: ",event.get("summary"))
-                print("Teacher: ",event.get("description"))
-                print("Location: ",event.get("location"))
-                print("Star time: ",event.decoded("dtstart"))
-                # print("End time: ",event.decoded("dtend"))
+            print("Event name: ",event.get("summary"))
+            print("Teacher: ",event.get("description"))
+            print("Location: ",event.get("location"))
+            print("Star time: ",event.decoded("dtstart"))
+            # print("End time: ",event.decoded("dtend"))
 
 
 # Do the demo_print for calendars that were imported
