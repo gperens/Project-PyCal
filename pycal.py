@@ -1,47 +1,116 @@
+import requests
+import getpass
+import time
+from bs4 import BeautifulSoup
+from icalendar import Calendar, Event
 
-###  High-level pseudocode program structure: ###
+# If you get module_error then install the required packages with "pip install -r requirements.txt"
 
-# Greet user and explain what this program does and what do they need to use it
+# Define different functions to authenticate with event sources and export the calendar dates.
+# All functions should take user credentials as arguments and return the calendar events in iCal format.
 
-print("Hello and welcome to PyCal!")
-
-# Ask user which event source(s) they want to use. Options:
-# - TalTech ÕIS
-# - Tartu ÕIS
-# - TalTech Moodle
-# - Tartu Moodle
-
-# Define different functions to authenticate with event sources:
-
-def auth_ut_moodle():
+def export_taltech_ois():
+    # TODO
+    # Problem with Taltech is there are no subjects for me this semester so I don't know how to test this.
     return None
 
-def auth_ttu_moodle():
+def export_tartu_ois():
+
+    username = str(input("Enter your Tartu ÕIS username: "))
+    password = getpass.getpass("Enter your Tartu ÕIS password: ")
+
+    session = requests.Session()
+
+    url = "https://ois2.ut.ee/api/user/sso?clientType=student"
+    response = session.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    auth_sate = soup.find("input", {"name": "AuthState"}).get("value")
+
+    url = "https://auth.ut.ee/idp/module.php/core/loginuserpass.php"
+    payload = {"username": username,"password": password, "AuthState": auth_sate}
+    response = session.post(url, payload)
+    soup = BeautifulSoup(response.text, "html.parser")
+    saml_response = soup.find("input", {"name": "SAMLResponse"}).get("value")
+    relay_state = soup.find("input", {"name": "RelayState"}).get("value")
+
+    url = "https://ois2.ut.ee/Shibboleth.sso/SAML2/POST"
+    payload = {"SAMLResponse": saml_response, "RelayState": relay_state}
+    response = session.post(url, payload)
+    jwt = session.cookies.get_dict()["jwt"]
+
+    url = "https://ois2.ut.ee/api/timetable/personal/link/en"
+    response = session.get(url, headers={"Authorization": f"Bearer {jwt}"})
+    ical_url= response.text[1:-1]
+
+    response = requests.get(ical_url)
+    if response.ok:
+        print("")
+        print("Tartu ÕIS events exported successfully!")
+        print("")
+    cal = Calendar.from_ical(response.text)
+
+    return cal
+
+def export_taltech_moodle():
+    # TODO
     return None
 
-def auth_ut_ois():
+def export_tartu_moodle():
+    # TODO
     return None
 
-def auth_ttu_ois():
-    return None
 
-# Depending on the choice of event sources call different auth functions
-# and save the necessary credentials.
+# Greet user and explain what this program does and what do they need to do next.
 
-# Trigger OAuth flow to gain access to Google Calendar API
+print("""
+Hello and welcome to PyCal!
+This program exports all your school calendar events from different sources and imports them into your Google Calendar.
 
-# Define different functions per event source to request for calendar data
+To start, you have to choose the sources from where you wish to export events.
+Possible options are:
+1. TalTech ÕIS
+2. Tartu ÕIS
+3. TalTech Moodle
+4. Tartu Moodle
 
-# Save calendar data in variable and modify it into suitable format
+Enter all the numbers for sources you wish to include. E.g. Entering "14" will export from TalTech ÕIS and Tartu Moodle.
+""")
+sources = str(input("Enter your choices: "))
 
-# Combine calendar data from different sources.
+# Call the source functions depending on the user choice and add them into the list of calendars
+calendars = []
+if "1" in sources:
+    calendars.append(export_taltech_ois())
+if "2" in sources:
+    calendars.append(export_tartu_ois())
+if "3" in sources:
+    calendars.append(export_taltech_moodle())
+if "4" in sources:
+    calendars.append(export_tartu_moodle())
 
-# Write calendar data into Google Calendar using the API
-# - We can ask if user wants to create a new calendar or write into an
-#   existing one
 
-# Print out success message if everything went well or error message on what went wrong.
+# Demo section for alpha just printing out the calendar events for selected source:
+def demo_print(cal):
+    for event in cal.walk():
+        if event.name == "VEVENT":
+            if event.name == "VEVENT":
+                print("Event name: ",event.get("summary"))
+                print("Teacher: ",event.get("description"))
+                print("Location: ",event.get("location"))
+                print("Star time: ",event.decoded("dtstart"))
+                # print("End time: ",event.decoded("dtend"))
 
 
+# Do the demo_print for calendars that were imported
+for i in calendars:
+    time.sleep(3)
+    demo_print(i)
 
 
+# TODO - Combine calendar data from different sources.
+
+# TODO - Trigger OAuth flow to gain access to Google Calendar API
+
+# TODO - Write calendar data into Google Calendar using the API
+
+# TODO - Print out success message if everything went well or error message on what went wrong.
