@@ -6,8 +6,8 @@ from icalendar import Calendar, Event
 
 # If you get module_error then install the required packages with "pip install -r requirements.txt"
 
-# Define different functions to authenticate with event sources and export the calendar dates.
-# All functions should take user credentials as arguments and return the calendar events in iCal format.
+# Define different export functions to authenticate with event sources and export the calendar dates.
+# All export functions should take user credentials as arguments and return the calendar events in iCal format.
 
 def export_taltech_ois():
     # TODO
@@ -17,10 +17,12 @@ def export_taltech_ois():
 def export_tartu_ois():
 
     username = str(input("Enter your Tartu ÕIS username: "))
+    # Use getpass module to collect user password without displaying the output on the screen
     password = getpass.getpass("Enter your Tartu ÕIS password: ")
 
     session = requests.Session()
 
+    # Perform series of back-and-forth requests because Tartu ÕIS uses SAML authentication which is messy.
     url = "https://ois2.ut.ee/api/user/sso?clientType=student"
     response = session.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -36,12 +38,16 @@ def export_tartu_ois():
     url = "https://ois2.ut.ee/Shibboleth.sso/SAML2/POST"
     payload = {"SAMLResponse": saml_response, "RelayState": relay_state}
     response = session.post(url, payload)
+    # Finally we received JWT token as a cookie which helps us to authenticate all other requests we wish to make.
     jwt = session.cookies.get_dict()["jwt"]
 
+    # This request provides us with unique link to our semester calendar iCal file
     url = "https://ois2.ut.ee/api/timetable/personal/link/en"
     response = session.get(url, headers={"Authorization": f"Bearer {jwt}"})
+    # Save iCal file URL
     ical_url= response.text[1:-1]
 
+    # Request the iCal file and save it as a iCal object
     response = requests.get(ical_url)
     if response.ok:
         print("")
