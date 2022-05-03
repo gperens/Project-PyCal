@@ -15,7 +15,7 @@ Program can export users university calendar events from different sources and c
 
 ## Project To-Do list:
 
-- Split export functions (and maybe Google integration) into separate files (Beta)
+- ~~Split export functions (and maybe Google integration) into separate files (Beta)~~
 - Can username and password be reused? (e.g. for Tartu) (Beta)
 - Implement TalTech ÕIS export (Beta)
 - Implement TalTech Moodle export (Beta)
