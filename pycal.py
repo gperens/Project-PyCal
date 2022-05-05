@@ -1,3 +1,4 @@
+import getpass
 from icalendar import Calendar, Event
 from export_tartu_ois import export_tartu_ois
 from export_tartu_moodle import export_tartu_moodle
@@ -5,6 +6,17 @@ from export_taltech_ois import export_taltech_ois
 from export_taltech_moodle import export_taltech_moodle
 
 # If you get module_error then install the required packages with "pip install -r requirements.txt"
+
+
+# General function to gather university login credentials
+def creds_uni(uni_name):
+    # Email value can be used directly as an username for Moodle. For ÕIS, we need to use the part before @ttu.ee/@ut.ee
+    email = str(input(f"Enter your {uni_name} Uni-ID email address: "))
+    # Use getpass module to collect user password without displaying the output on the screen
+    password = getpass.getpass(f"Enter your {uni_name} Uni-ID password: ")
+
+    return email, password
+
 
 # Greet user and explain what this program does and what do they need to do next.
 
@@ -23,16 +35,28 @@ Enter all the numbers for sources you wish to include. E.g. Entering "14" will e
 """)
 sources = str(input("Enter your choices: "))
 
-# Call the source functions depending on the user choice and add them into the list of calendars
+# Gather necessary credentials and call the right source functions depending on the user choice and add them into the list of calendars
+# This is implemented in a way that we don't ask credentials twice for the same university
+
 calendars = []
 if "1" in sources:
-    calendars.append(export_taltech_ois())
+    taltech_creds = creds_uni("TalTech")
+    calendars.append(export_taltech_ois(taltech_creds[0],taltech_creds[1]))
 if "2" in sources:
-    calendars.append(export_tartu_ois())
+    tartu_creds = creds_uni("Tartu")
+    calendars.append(export_tartu_ois(tartu_creds[0],tartu_creds[1]))
 if "3" in sources:
-    calendars.append(export_taltech_moodle())
+    try:
+        calendars.append(export_taltech_moodle(taltech_creds[0],taltech_creds[1]))
+    except:
+        taltech_creds = creds_uni("TalTech")
+        calendars.append(export_taltech_moodle(taltech_creds[0],taltech_creds[1]))
 if "4" in sources:
-    calendars.append(export_tartu_moodle())
+    try:
+        calendars.append(export_tartu_moodle(tartu_creds[0],tartu_creds[1]))
+    except:
+        tartu_creds = creds_uni("Tartu")
+        calendars.append(export_tartu_moodle(tartu_creds[0],tartu_creds[1]))
 
 
 # Demo section for alpha just printing out the calendar events for selected source:

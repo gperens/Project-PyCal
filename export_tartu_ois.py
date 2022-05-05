@@ -1,16 +1,13 @@
 import requests
-import getpass
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
 
 # Define export functions to authenticate with event source and get the events.
 # All export functions should take user credentials as arguments and return the calendar events in iCal format.
 
-def export_tartu_ois():
+def export_tartu_ois(email,password):
 
-    username = str(input("Enter your Tartu ÕIS username: "))
-    # Use getpass module to collect user password without displaying the output on the screen
-    password = getpass.getpass("Enter your Tartu ÕIS password: ")
+    username = email.split("@")[0]
 
     session = requests.Session()
 

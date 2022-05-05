@@ -1,5 +1,4 @@
 import requests
-import getpass
 import json
 import re
 from bs4 import BeautifulSoup
@@ -8,11 +7,7 @@ from icalendar import Calendar, Event
 # Define export functions to authenticate with event source and get the events.
 # All export functions should take user credentials as arguments and return the calendar events in iCal format.
 
-def export_tartu_moodle():
-
-    username = str(input("Enter your Tartu moodle username/email: "))
-    # Use getpass module to collect user password without displaying the output on the screen
-    password = getpass.getpass("Enter your Tartu Moodle password: ")
+def export_tartu_moodle(email,password):
 
     session = requests.Session()
 
@@ -43,7 +38,7 @@ def export_tartu_moodle():
 
     # Request # 4
     url = "https://login.microsoftonline.com/6d356317-0d04-4abc-b6b6-8c9773885bb0/login"
-    payload = {"login": username,"passwd": password,"ctx": ctx,"flowToken": flow_token}
+    payload = {"login": email,"passwd": password,"ctx": ctx,"flowToken": flow_token}
     response = session.post(url, payload)
     soup = BeautifulSoup(response.text, "html.parser")
     code = soup.find("input", {"name": "code"}).get("value")
