@@ -4,6 +4,7 @@ from export_tartu_ois import export_tartu_ois
 from export_tartu_moodle import export_tartu_moodle
 from export_taltech_ois import export_taltech_ois
 from export_taltech_moodle import export_taltech_moodle
+from google_cal import google_auth, create_cal, get_cal_by_name, add_events
 
 # If you get module_error then install the required packages with "pip install -r requirements.txt"
 
@@ -59,26 +60,18 @@ if "4" in sources:
         calendars.append(export_tartu_moodle(tartu_creds[0],tartu_creds[1]))
 
 
-# Demo section for alpha just printing out the calendar events for selected source:
-def demo_print(cal):
-    for event in cal.walk():
-        if event.name == "VEVENT":
-            print("Event name: ",event.get("summary"))
-            print("Teacher: ",event.get("description"))
-            print("Location: ",event.get("location"))
-            print("Star time: ",event.decoded("dtstart"))
-            # print("End time: ",event.decoded("dtend"))
+print("Do you want to create a new calendar in Google Calendar for your university events or use existing one?")
+choice = int(input("Enter '1' for new calendar and '2' for existing one: "))
+if choice == 1:
+    cal_name = str(input("Insert the name for the new calendar: "))
+    create_cal(cal_name)
+elif choice == 2:
+    cal_name = str(input("Insert the name of the existing calendar you wish to use: "))
+else:
+    print("Wrong input. Please try again.")
 
+for events_list in calendars:
+    add_events(cal_name,events_list)
 
-# Do the demo_print for calendars that were imported
-for i in calendars:
-    demo_print(i)
-
-
-# TODO - Combine calendar data from different sources.
-
-# TODO - Trigger OAuth flow to gain access to Google Calendar API
-
-# TODO - Write calendar data into Google Calendar using the API
-
-# TODO - Print out success message if everything went well or error message on what went wrong.
+print("Events sucessfully added!")
+print("Bye!")

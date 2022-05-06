@@ -1,9 +1,11 @@
 import requests
+import datetime
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
 
-# Define export functions to authenticate with event source and get the events.
-# All export functions should take user credentials as arguments and return the calendar events in iCal format.
+# Defines export function to authenticate with event source and get the events.
+# Export function should take user credentials as arguments and return the list
+# of calendar events as dictionary objects in the format that Google Calendar expects.
 
 def export_tartu_ois(email,password):
 
@@ -45,7 +47,47 @@ def export_tartu_ois(email,password):
     if response.ok:
         print("")
         print("Tartu ÕIS events exported successfully!")
-        print("")
     cal = Calendar.from_ical(response.text)
 
-    return cal
+    
+    # Reformat iCal events into the list of calendar events as dictionary objects in the format that Google Calendar expects.
+    events_list = []
+
+    for event in cal.walk():
+        if event.name == "VEVENT":
+            
+            # Get category and description values if they exist and put them together as description
+            description = ""
+            if event.get('categories') is not None:
+                description += event.get('categories').to_ical().decode().title() + "\n"
+            if event.get("description") is not None:
+                description += event.get("description").to_ical().decode() + "\n"
+            # Get location value if it exists
+            location = ""
+            if event.get("location") is not None:
+                location = event.get("location")
+            # Get exeption dates if they exist
+            exdate = ""
+            if event.get("exdate") is not None:
+                exdate = "EXDATE:" + event.get("exdate").to_ical().decode()
+            
+            # Get the start value for the first recurring event
+            start = event.decoded("dtstart")
+            # Get the end value for the first recurring event by adding duration to the start value
+            end = start + event.decoded("duration")
+            # Get the recurrance rule
+            rrule = "RRULE:" + event.get("rrule").to_ical().decode()
+
+            formated_event = {
+                'iCalUID': event.get("uid").to_ical().decode(),
+                'summary': event.get("summary").to_ical().decode(),
+                'description': description,
+                'location': location,
+                'start': {'dateTime': start.isoformat(), 'timeZone': 'Europe/Tallinn'},
+                'end': {'dateTime': end.isoformat(), 'timeZone': 'Europe/Tallinn'},
+                'recurrence': [rrule,exdate]
+            }
+
+            events_list.append(formated_event)
+
+    return events_list

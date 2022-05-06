@@ -16,19 +16,18 @@ Program can export users university calendar events from different sources and c
 ## Project To-Do list:
 
 - ~~Split export functions (and maybe Google integration) into separate files (Beta)~~
-- ~~Can username and password be reused? (e.g. for Tartu) (Beta)~~
-- Implement TalTech ÕIS export (Beta)
-- Implement TalTech Moodle export (Beta)
-- Clean up event format for all event sources so they are ready for import (Beta)
-- Google Calendar integration (Beta)
-- Import iCal data into new calendar in Google Calendar (Beta)
-- Import iCal data into existing calendar in Google Calendar (Beta)
-- Update existing Google Calendar if there are any changes (Beta)
+- ~~Don't ask for duplicate credentials for same university (Beta)~~
+- Implement TalTech ÕIS export with correct event format (Beta)
+- Implement TalTech Moodle export with correct event format (Beta)
+- ~~Google Calendar integration and necessary functions (Beta)~~
+- ~~Import calendar events into a new calendar in Google Calendar (Beta)~~
+- ~~Import calendar events into a existing calendar in Google Calendar (Beta)~~
 - GUI with Tkinter (Beta)
 - Clean and document the code (Beta)
+- Add more error handling and feedback to the users (Beta)
 - Run periodically without user action (Later)
 - Pick and choose what events will be imported to Google Calendar (Later)
-- Ability to manually add iCal link/source (Later)
+- Ability to manually add iCal link/source/file (Later)
 - Email updates? (Later)
 
 ---
