@@ -43,14 +43,12 @@ def list_existing_cals():
 # Create a new calendar with provided name
 def create_cal(cal_name):
     service = google_auth()
-    # TODO - don't create calendars with duplicate names
     new_cal_config = {'summary': cal_name, 'timeZone': 'Europe/Tallinn'}
     new_cal = service.calendars().insert(body=new_cal_config).execute()
 
 # Get the calendar ID from its name 
 def get_cal_by_name(name):
     service = google_auth()
-    # TODO - fail gracefully    
     calendar_list = service.calendarList().list().execute()
     for calendar_list_entry in calendar_list['items']:
         if calendar_list_entry['summary'] == name:
@@ -61,14 +59,11 @@ def get_cal_by_name(name):
 # Delete a existing calendar by providing its name
 def delete_cal_by_name(name):
     service = google_auth()
-    # TODO - fail gracefully
     cal_id = get_cal_by_name(name)
     service.calendars().delete(calendarId=cal_id).execute()
 
 # Add the list of events into a calendar
 def add_events(cal_name,events_list):
     service = google_auth()
-    # TODO - fail gracefully    
     for event in events_list:
         imported_event = service.events().import_(calendarId=get_cal_by_name(cal_name), body=event).execute()
-
