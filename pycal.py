@@ -12,11 +12,11 @@ from google_cal import google_auth, create_cal, get_cal_by_name, add_events
 # General function to gather university login credentials
 def creds_uni(uni_name):
     # Email value can be used directly as an username for Moodle. For ÕIS, we need to use the part before @ttu.ee/@ut.ee
-    email = str(input(f"Enter your {uni_name} Uni-ID email address: "))
+    username = str(input(f"Enter your {uni_name} Uni-ID username: "))
     # Use getpass module to collect user password without displaying the output on the screen
     password = getpass.getpass(f"Enter your {uni_name} Uni-ID password: ")
 
-    return email, password
+    return username, password
 
 
 # Greet user and explain what this program does and what do they need to do next.
@@ -59,7 +59,7 @@ if "4" in sources:
         tartu_creds = creds_uni("Tartu")
         calendars.append(export_tartu_moodle(tartu_creds[0],tartu_creds[1]))
 
-
+print("")
 print("Do you want to create a new calendar in Google Calendar for your university events or use existing one?")
 choice = int(input("Enter '1' for new calendar and '2' for existing one: "))
 if choice == 1:

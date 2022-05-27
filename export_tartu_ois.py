@@ -7,9 +7,7 @@ from icalendar import Calendar, Event
 # Export function should take user credentials as arguments and return the list
 # of calendar events as dictionary objects in the format that Google Calendar expects.
 
-def export_tartu_ois(email,password):
-
-    username = email.split("@")[0]
+def export_tartu_ois(username,password):
 
     session = requests.Session()
 

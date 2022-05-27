@@ -9,9 +9,10 @@ from icalendar import Calendar, Event
 # Export function should take user credentials as arguments and return the list
 # of calendar events as dictionary objects in the format that Google Calendar expects.
 
-def export_tartu_moodle(email,password):
+def export_tartu_moodle(username,password):
 
     session = requests.Session()
+    email = username + "@ut.ee"
 
     # Perform series of back-and-forth requests, parse out different obscure token values from json and hidden input fields
     # because Tartu Moodle uses Microsoft authentication which is very messy.
